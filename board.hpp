@@ -31,11 +31,22 @@ public:
 
 
 	board(int n, int m);
+	board(int n, int m, char** b, int* v);
 
 	void printBoard();
+
+	char** getBoardarr();
+	int* getValid();
+	int getM();
+	int getN();
+
+	void setBoardarr(char** b);
+	void setValid(int* v);
 	
 	int placePiece(int col,char sym);
-	int getN();
+	void unplacePiece(int col, char sym);
+	int getBoardScore(int col,char sym);
+	
 
 
 };

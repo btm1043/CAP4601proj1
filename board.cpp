@@ -29,6 +29,39 @@ board::board(int inn, int inm)
 
 }
 
+board::board(int inn, int inm, char** b, int* v) {
+	n = inn;
+	m = inm;
+
+	valid = (int*)malloc(n * sizeof(int));
+
+	boardarr = (char**)malloc(n * sizeof(char*));
+
+	for (int i = 0; i < n; i++) {
+		boardarr[i] = (char*)malloc(n * sizeof(char));
+		valid[i] = 0;
+	}
+
+	for (int j = 0; j < n; j++) {
+		for (int k = 0; k < n; k++) {
+			boardarr[j][k] = ' ';
+		}
+	}
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			boardarr[i][j] = b[i][j];
+		}
+	}
+
+	for (int k = 0; k < n; k++) {
+		valid[k] = v[k];
+	}
+
+
+}
+
+
 void board::printBoard()
 {
 	for (int i = 0; i < n; i++) {
@@ -40,6 +73,21 @@ void board::printBoard()
 		printDrow(boardarr[n - (i + 1)]);
 	}
 	printHsplit();
+}
+
+char** board::getBoardarr()
+{
+	return boardarr;
+}
+
+int* board::getValid()
+{
+	return valid;
+}
+
+int board::getM()
+{
+	return m;
 }
 
 int board::placePiece(int col,char sym)
@@ -59,6 +107,87 @@ int board::placePiece(int col,char sym)
 	}
 	return 0;
 }
+
+int board::getBoardScore(int col,char sym) {
+	int score = 0;
+	int count = 0;
+	int emptcount = 0;
+	int best = 0;
+
+	//Preference for center column
+	if (col == n / 2) {
+		score += 5;
+	}
+
+
+	//Score Rows
+
+	//row to check
+	int r = valid[col];
+	r = r - 1;
+
+	//from col to column 0
+	for (int i = col; i > 0; i--) {
+		if (boardarr[r][i] == sym) {
+			count++;
+		}
+		else if(boardarr[r][i]==' ') {
+			emptcount++;
+		}
+		else {
+			i = 0;
+		}
+	}
+	//from col to column n
+	for (int i = col + 1; i < n; i++) {
+		if (boardarr[r][i] == sym) {
+			count++;
+		}
+		else if (boardarr[r][i] == ' ') {
+			emptcount++;
+		}
+		else {
+			i = n;
+		}
+	}
+	if (count + emptcount >= m && (boardarr[r][col-1]==sym || boardarr[r][col+1]==sym)) {
+		score += count;
+	}
+	else {
+		score += (-100);
+	}
+	if (count == m) {
+		score += 1000;
+	}
+
+
+	//Score Columns
+	//for (int i = 0; i < n; i++) {
+	//	//Loop through row elements
+	//	for (int j = 0; j < n; j++) {
+	//		if (boardarr[j][i] == sym) {
+	//			count++;
+
+	//		}
+	//		else {
+	//			if (count > best) {
+	//				best = count;
+	//			}
+	//			count = 0;
+	//		}
+	//	}
+	//	if (best < m - 1) {
+	//		score += best * 10;
+	//	}
+	//	else {
+	//		score += 1000;
+	//	}
+	//	best = 0;
+	//	count = 0;
+	//}
+	return score;
+}
+
 
 int board::getN()
 {
@@ -170,4 +299,26 @@ while (SNDrow >= 0) {
 
 
 	return false;
+}
+
+
+void board::unplacePiece(int col, char sym) {
+	valid[col]--;
+	boardarr[valid[col]][col] = ' ';
+	
+}
+
+void board::setBoardarr(char** b) {
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			boardarr[i][j] = b[i][j];
+		}
+	}
+
+	
+}
+void board::setValid(int* v) {
+	for (int k = 0; k < n; k++) {
+		valid[k] = v[k];
+	}
 }

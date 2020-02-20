@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "board.hpp"
+#include "agent.hpp"
 
 #define PLAYER_SYMBOL 'X'
 #define COM_SYMBOL 'O'
@@ -11,7 +12,7 @@
 
 int generateGame(int n, int m);
 int playerTurn(board* b);
-int computerTurn(board* b);
+int computerTurn(board* b,int bmove);
 
 int main(int argc, char** argv)
 {
@@ -23,7 +24,6 @@ int main(int argc, char** argv)
 		n=atoi(argv[1]);
 		m=atoi(argv[2]);
 		if ((n > 2 && n <= 10) && (m > 1 && m < n)) {
-			std::cout << "Hello World!\n" << n << "\n" << m <<"\n";
 			generateGame(n, m);
 		}
 		else {
@@ -43,6 +43,8 @@ int generateGame(int n, int m)
 	int won=0;
 	bool pTurn = true;
 
+	agent* comp = new agent(COM_SYMBOL, b);
+
 	b->printBoard();
 
 	while (won!=1) {
@@ -54,9 +56,10 @@ int generateGame(int n, int m)
 			pTurn = false;
 		}
 		else {
-			won=computerTurn(b);
+			comp->get_tempboard(b);
+			won=computerTurn(b,(comp->best_move(COM_SYMBOL)));
 			while (won == -1) {
-				won = computerTurn(b);
+				won = computerTurn(b,(comp->best_move(COM_SYMBOL)));
 			}
 			pTurn = true;
 		}
@@ -76,11 +79,11 @@ int playerTurn(board* b)
 	
 }
 
-int computerTurn(board* b)
+int computerTurn(board* b,int bmove)
 {
 	int place;
 	
-	place = (rand() % 10);
+	place = bmove;
 	return b->placePiece(place, COM_SYMBOL);
 
 }
